@@ -3,3 +3,9 @@
 ################################################################################
 
 /DominioTest/obj
+/DominioTest/bin/Debug/netcoreapp2.0
+/BibliotecaRepositorio/obj
+/BibliotecaRepositorio/bin/Debug/netcoreapp2.0
+/BibliotecaDominio/bin/Debug/netcoreapp2.0
+/BibliotecaDominio/obj
+/.vs/Biblioteca_DotNet/v15

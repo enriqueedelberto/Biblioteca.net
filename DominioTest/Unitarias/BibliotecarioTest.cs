@@ -59,7 +59,26 @@ namespace DominioTest.Unitarias
             Assert.IsFalse(esprestado);
         }
 
-        
+
+        [TestMethod]
+        public void EsIsbnPalindromo()
+        {
+            // Arrange
+            // Arrange
+            LibroTestDataBuilder libroTestBuilder = new LibroTestDataBuilder().ConTitulo("Mi tiempo, mi decisión").
+                ConAnio(2019).ConIsbn("12ASA21");
+
+            // Act
+            Libro libro = libroTestBuilder.Build();
+
+            // Act
+            Bibliotecario bibliotecario = new Bibliotecario(repositorioLibro.Object, repositorioPrestamo.Object);
+            var isPalindromo = bibliotecario.EsIsbnPalindromo(libro.Isbn);
+
+            // Assert
+            Assert.AreEqual(isPalindromo, true);
+            
+        }
 
     }
 }
