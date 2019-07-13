@@ -26,18 +26,21 @@ namespace BibliotecaDominio
         public void Prestar(string isbn, string nombreUsuario)
         {
 
-            //Validar si el Libro existe
+            //Validar si el Libro existe y si esta prestado.
             if (!ExisteLibro(isbn) || EsPrestado(isbn)) {
                 throw new Exception(EL_LIBRO_NO_SE_ENCUENTRA_DISPONIBLE);
             }
 
+            //se valida si El ISBN es Palindromo
             if (EsIsbnPalindromo(isbn)) {
                 throw new Exception(LIBRO_PALINDROMO_SOLO_BIBLIOTECA);
             }
 
             var libroPrestar = libroRepositorio.ObtenerPorIsbn(isbn: isbn);
             var fechaPrestamo = new DateTime();
+
             var fechaEntregaMaxima = CalcularFechaEntregaMaxima(isbn: isbn, fechaPrestamo: fechaPrestamo);
+
             var prestamo = new Prestamo(
                                   fechaSolicitud: fechaPrestamo,
                                   libro: libroPrestar,
@@ -60,6 +63,7 @@ namespace BibliotecaDominio
 
         public bool ExisteLibro(string isbn) {
             var libroExiste = this.libroRepositorio.ObtenerPorIsbn(isbn);
+            //se valida si el Libro Existe.
             if (libroExiste == null) {
                 return false;
             }
@@ -68,11 +72,14 @@ namespace BibliotecaDominio
 
         public bool EsIsbnPalindromo(string isbn) {
             var reverseIsbn = "";
-            for (int i = isbn.Length - 1; i >= 0; i--) //String Reverse  
+
+            //se busca el String Inverso
+            for (int i = isbn.Length - 1; i >= 0; i--) 
             {
                 reverseIsbn += isbn[i].ToString();
             }
 
+            //Se comparan las cadenas.
             if (reverseIsbn.Equals(isbn)) {
                 return true;
             }

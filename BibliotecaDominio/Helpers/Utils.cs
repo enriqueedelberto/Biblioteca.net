@@ -7,17 +7,19 @@ namespace BibliotecaDominio.Helpers
     public class Utils
     {
 
-       //Método para contar 
+        public const string DIAS_NO_NEGATIVAS = "Los días no pueden ser negativos";
+
+        //Método para contar 
         public static DateTime ContarDiasHabiles(DateTime date, int days)
         {
             if (days < 0)
             {
-                throw new ArgumentException("days cannot be negative", "days");
+                throw new ArgumentException(DIAS_NO_NEGATIVAS);
             }
 
             if (days == 0) return date;
 
-           
+           //se calcula la fecha de entrega
             for (int i=1;i<days; i++) {
                 date = date.AddDays(1);
 
