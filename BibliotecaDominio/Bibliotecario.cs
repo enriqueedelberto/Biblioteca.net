@@ -1,7 +1,9 @@
-﻿using BibliotecaDominio.IRepositorio;
+﻿using BibliotecaDominio.Helpers;
+using BibliotecaDominio.IRepositorio;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BibliotecaDominio
 {
@@ -9,9 +11,11 @@ namespace BibliotecaDominio
     {
         public const string EL_LIBRO_NO_SE_ENCUENTRA_DISPONIBLE = "El libro no se encuentra disponible";
         public const string LIBRO_PALINDROMO_SOLO_BIBLIOTECA = "los libros palíndromos solo se pueden utilizar en la biblioteca";
+        public const int MAX_DIAS_HABILES_PRESTAMO = 15;
+        public const int SUMATORIA_DIGITOS_ISBN = 30;
 
-        private  IRepositorioLibro libroRepositorio;
-        private  IRepositorioPrestamo prestamoRepositorio;
+        private IRepositorioLibro libroRepositorio;
+        private IRepositorioPrestamo prestamoRepositorio;
 
         public Bibliotecario(IRepositorioLibro libroRepositorio, IRepositorioPrestamo prestamoRepositorio)
         {
@@ -21,9 +25,9 @@ namespace BibliotecaDominio
 
         public void Prestar(string isbn, string nombreUsuario)
         {
-         
+
             //Validar si el Libro existe
-            if(!ExisteLibro(isbn) || EsPrestado(isbn)) {
+            if (!ExisteLibro(isbn) || EsPrestado(isbn)) {
                 throw new Exception(EL_LIBRO_NO_SE_ENCUENTRA_DISPONIBLE);
             }
 
@@ -32,10 +36,12 @@ namespace BibliotecaDominio
             }
 
             var libroPrestar = libroRepositorio.ObtenerPorIsbn(isbn: isbn);
+            var fechaPrestamo = new DateTime();
+            var fechaEntregaMaxima = CalcularFechaEntregaMaxima(isbn: isbn, fechaPrestamo: fechaPrestamo);
             var prestamo = new Prestamo(
-                                  fechaSolicitud: new DateTime(),
-                                  libro: libroPrestar, 
-                                  fechaEntregaMaxima: new DateTime().AddDays(3), 
+                                  fechaSolicitud: fechaPrestamo,
+                                  libro: libroPrestar,
+                                  fechaEntregaMaxima: fechaEntregaMaxima,
                                   nombreUsuario: nombreUsuario);
 
             this.prestamoRepositorio.Agregar(prestamo);
@@ -72,6 +78,31 @@ namespace BibliotecaDominio
             }
 
             return false;
+        }
+
+        //Método para calcular Fecha de Entrega Máxima
+        public DateTime? CalcularFechaEntregaMaxima(string isbn, DateTime fechaPrestamo) {
+            
+            DateTime fechaEntregaMaxima = fechaPrestamo;
+            var sum = 0;
+
+            //Se suman los digitos del ISBN
+            for (int i = 0; i<isbn.Length; i ++) {
+                if (Char.IsDigit(isbn[i])) {
+                    sum += Int32.Parse(isbn[i].ToString());
+                }
+                
+            }
+
+            //Se valida si la Suma de digitos de ISBN cumple con la regla de negocios
+            if (sum >= SUMATORIA_DIGITOS_ISBN) {
+                fechaEntregaMaxima = Utils.ContarDiasHabiles(fechaPrestamo, MAX_DIAS_HABILES_PRESTAMO);
+
+
+                return fechaEntregaMaxima;
+            }
+
+            return null;
         }
     }
 }

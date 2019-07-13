@@ -69,5 +69,19 @@ namespace DominioTest.Integracion
         
         }
 
+        [TestMethod]
+        public void CalcularFechaMaximaEntregaTest() {
+            Libro libro = new LibroTestDataBuilder().ConTitulo("Decisiones, la vida continua").ConIsbn("T878B85Z").Build();
+            repositorioLibro.Agregar(libro);
+            Bibliotecario bibliotecario = new Bibliotecario(repositorioLibro, repositorioPrestamo);
+
+            var fechaPrestamo = new DateTime(2017, 5, 26);
+            var fechaMaximaEsperada = new DateTime(2017, 6, 12);
+            var fechaEntregaMaxima = bibliotecario.CalcularFechaEntregaMaxima(isbn: libro.Isbn, fechaPrestamo: fechaPrestamo);
+
+            Assert.AreEqual(fechaEntregaMaxima, fechaMaximaEsperada);
+
+        }
+
     }
 }
